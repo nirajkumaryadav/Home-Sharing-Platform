@@ -1,0 +1,38 @@
+[
+    {
+        "id": 1,
+        "username": "john_doe",
+        "email": "john@example.com",
+        "password": "hashed_password_1",
+        "firstName": "John",
+        "lastName": "Doe",
+        "phone": "123-456-7890"
+    },
+    {
+        "id": 2,
+        "username": "jane_smith",
+        "email": "jane@example.com",
+        "password": "hashed_password_2",
+        "firstName": "Jane",
+        "lastName": "Smith",
+        "phone": "098-765-4321"
+    },
+    {
+        "id": 3,
+        "username": "alice_jones",
+        "email": "alice@example.com",
+        "password": "hashed_password_3",
+        "firstName": "Alice",
+        "lastName": "Jones",
+        "phone": "555-123-4567"
+    },
+    {
+        "id": 4,
+        "username": "bob_brown",
+        "email": "bob@example.com",
+        "password": "hashed_password_4",
+        "firstName": "Bob",
+        "lastName": "Brown",
+        "phone": "555-987-6543"
+    }
+]

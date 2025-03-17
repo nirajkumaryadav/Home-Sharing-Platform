@@ -1,0 +1,56 @@
+.home-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin: 16px;
+    transition: transform 0.3s ease;
+}
+
+.home-card:hover {
+    transform: translateY(-5px);
+}
+
+.home-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.home-title {
+    margin: 16px;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.home-location {
+    margin: 0 16px;
+    color: #666;
+}
+
+.home-price {
+    margin: 8px 16px;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.home-availability {
+    margin: 8px 16px;
+    color: #28a745;
+}
+
+.book-button {
+    display: block;
+    background-color: #007bff;
+    color: white;
+    text-align: center;
+    padding: 8px 16px;
+    margin: 16px;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.book-button:hover {
+    background-color: #0056b3;
+}

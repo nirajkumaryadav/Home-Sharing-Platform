@@ -1,0 +1,323 @@
+/* Listing container styles */
+.listing-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Listing create form styles */
+.listing-create {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  margin-bottom: 40px;
+}
+
+.listing-create h2 {
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 24px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 15px;
+}
+
+.listing-create form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.listing-create .form-group {
+  margin-bottom: 0;
+}
+
+.listing-create label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #444;
+}
+
+.listing-create input,
+.listing-create textarea,
+.listing-create select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: border-color 0.3s;
+}
+
+.listing-create input:focus,
+.listing-create textarea:focus,
+.listing-create select:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.listing-create textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.listing-create button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: background-color 0.3s;
+  margin-top: 15px;
+}
+
+.listing-create button:hover {
+  background-color: #0069d9;
+}
+
+/* File upload section */
+.image-upload {
+  border: 2px dashed #ddd;
+  padding: 20px;
+  text-align: center;
+  border-radius: 8px;
+  margin: 15px 0;
+  transition: all 0.3s;
+}
+
+.image-upload:hover {
+  border-color: #007bff;
+}
+
+.image-preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.image-preview img {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+/* Listing Grid */
+.listings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 25px;
+  margin-top: 30px;
+}
+
+/* Listing Card */
+.listing-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+}
+
+.listing-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+}
+
+.listing-card .image {
+  height: 200px;
+  overflow: hidden;
+}
+
+.listing-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.listing-card:hover img {
+  transform: scale(1.05);
+}
+
+.listing-card .content {
+  padding: 20px;
+}
+
+.listing-card .title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.listing-card .location {
+  display: flex;
+  align-items: center;
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.listing-card .location svg {
+  margin-right: 5px;
+}
+
+.listing-card .details {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+  margin-top: 15px;
+}
+
+.listing-card .price {
+  color: #007bff;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.listing-card .rating {
+  display: flex;
+  align-items: center;
+  color: #f5a623;
+}
+
+.listing-card .rating svg {
+  margin-right: 3px;
+}
+
+.listing-card .badge {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background-color: #007bff;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Listing Details Page */
+.listing-details {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.listing-details .header {
+  position: relative;
+  height: 400px;
+}
+
+.listing-details .header img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.listing-details .content {
+  padding: 30px;
+}
+
+.listing-details h1 {
+  font-size: 28px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.listing-details .meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.listing-details .location {
+  color: #666;
+  display: flex;
+  align-items: center;
+}
+
+.listing-details .features {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+  margin: 25px 0;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+.listing-details .feature {
+  display: flex;
+  align-items: center;
+}
+
+.listing-details .feature svg {
+  margin-right: 10px;
+  color: #007bff;
+}
+
+.listing-details .description {
+  line-height: 1.6;
+  color: #444;
+  margin-bottom: 25px;
+}
+
+.listing-details .section {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.listing-details .section h3 {
+  font-size: 20px;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .listings-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .listing-create form {
+    grid-template-columns: 1fr;
+  }
+  
+  .listing-details .header {
+    height: 300px;
+  }
+  
+  .listing-details .content {
+    padding: 20px;
+  }
+  
+  .listing-details .features {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .listing-details .features {
+    grid-template-columns: 1fr;
+  }
+  
+  .listing-card .image {
+    height: 180px;
+  }
+}
