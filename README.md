@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Home Sharing Platform
 
 ## Overview
@@ -67,3 +68,6 @@ Contributions are welcome! Please open an issue or submit a pull request for any
 
 ## License
 This project is licensed under the MIT License. See the LICENSE file for details.
+=======
+# Home-Sharing-Platform
+>>>>>>> 27cb8dbdec38229a8c6caf45484228f2865c2bb8
