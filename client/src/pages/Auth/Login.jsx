@@ -31,16 +31,20 @@ const Login = () => {
       // Try to login
       await login(formData.email, formData.password);
       
-      // Get redirect parameter or default to dashboard
-      const params = new URLSearchParams(location.search);
-      const redirectPath = params.get('redirect') || '/dashboard';
-      navigate(redirectPath);
+      // Redirection is now handled by the useAuth hook's useEffect
     } catch (err) {
       setError('Invalid email or password. Please try again.');
       console.error('Login error:', err);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Make sure there's a link to register that preserves the redirect parameter
+  const registerLink = () => {
+    const params = new URLSearchParams(location.search);
+    const redirectParam = params.get('redirect');
+    return redirectParam ? `/register?redirect=${encodeURIComponent(redirectParam)}` : '/register';
   };
 
   return (
@@ -110,7 +114,7 @@ const Login = () => {
 
           <div className="auth-alternate">
             <p>Don't have an account?</p>
-            <Link to="/register" className="auth-alternate-link">Create one now</Link>
+            <Link to={registerLink()} className="auth-alternate-link">Create one now</Link>
           </div>
         </div>
       </div>

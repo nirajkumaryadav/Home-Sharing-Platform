@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import authService from '../../services/auth.service';
+import { useAuth } from '../../hooks/useAuth'; // Add this import
 import './Auth.css';
 
 const Register = () => {
+  const location = useLocation();
+  const { login } = useAuth(); // Add this to use the login function
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -23,7 +26,7 @@ const Register = () => {
     e.preventDefault();
     setError('');
     
-    // Validation
+    // Validation checks remain the same
     if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
       setError('All fields are required');
       return;
@@ -49,8 +52,11 @@ const Register = () => {
         password: formData.password
       });
       
-      // Redirect to login page
-      navigate('/login?registered=true');
+      // Use the login function from useAuth instead of authService.login
+      // This ensures the redirect will work through the useAuth hook
+      await login(formData.email, formData.password);
+      
+      // Do not navigate here - let useAuth handle the redirect
     } catch (err) {
       setError(err.message || 'Registration failed. Please try again.');
       console.error('Registration error:', err);
@@ -59,7 +65,15 @@ const Register = () => {
     }
   };
 
+  // The loginLink function is correct - keep it
+  const loginLink = () => {
+    const params = new URLSearchParams(location.search);
+    const redirectParam = params.get('redirect');
+    return redirectParam ? `/login?redirect=${encodeURIComponent(redirectParam)}` : '/login';
+  };
+
   return (
+    // Rest of your component remains the same
     <div className="auth-page">
       <div className="auth-container">
         <div className="auth-card">
@@ -123,13 +137,20 @@ const Register = () => {
               />
             </div>
 
-            <button type="submit" className="auth-button" disabled={isLoading}>
+            <button 
+              type="submit" 
+              className="auth-button" 
+              disabled={isLoading}
+            >
               {isLoading ? 'Creating Account...' : 'Create Account'}
             </button>
           </form>
 
-          <div className="auth-links">
-            <p>Already have an account? <Link to="/login">Sign In</Link></p>
+          <div className="auth-alternate">
+            <span>Already have an account?</span>
+            <Link to={loginLink()} className="auth-alternate-link">
+              Sign in
+            </Link>
           </div>
         </div>
       </div>

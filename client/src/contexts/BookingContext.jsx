@@ -1,120 +1,99 @@
-import React, { createContext, useState, useContext, useCallback } from 'react';
-import { AuthContext } from './AuthContext';
-import mockHomes from '../assets/mockData/homes.json';
-import bookingService from '../services/booking.service';
+import React, { createContext, useState, useContext, useCallback, useEffect } from 'react';
+import { useAuth } from '../hooks/useAuth';
 
 export const BookingContext = createContext();
 
 export const BookingProvider = ({ children }) => {
-    const [bookings, setBookings] = useState(() => {
-        // Initialize bookings from localStorage during initial render
-        try {
-            const savedBookings = localStorage.getItem('userBookings');
-            return savedBookings ? JSON.parse(savedBookings) : [];
-        } catch {
-            return [];
-        }
-    });
-    
-    const { user } = useContext(AuthContext);
+    const [bookings, setBookings] = useState([]);
+    const { user } = useAuth();
 
-    const saveBookings = useCallback((newBookings) => {
+    // Load bookings when user changes
+    useEffect(() => {
         if (user) {
-            localStorage.setItem('userBookings', JSON.stringify(newBookings));
+            const savedBookings = localStorage.getItem(`bookings_${user.id}`);
+            if (savedBookings) {
+                try {
+                    const parsedBookings = JSON.parse(savedBookings);
+                    setBookings(parsedBookings);
+                    console.log("Loaded bookings from localStorage:", parsedBookings);
+                } catch (error) {
+                    console.error("Error parsing saved bookings:", error);
+                }
+            }
+        } else {
+            setBookings([]);
         }
     }, [user]);
 
-    const addBooking = useCallback((booking) => {
-        setBookings(prevBookings => {
-            const newBookings = [...prevBookings, booking];
-            saveBookings(newBookings);
-            return newBookings;
-        });
-    }, [saveBookings]);
-
-    const removeBooking = useCallback((bookingId) => {
-        setBookings(prevBookings => {
-            const newBookings = prevBookings.filter(booking => booking.id !== bookingId);
-            saveBookings(newBookings);
-            return newBookings;
-        });
-        
-        // Try to update on the server if we have a real API
-        try {
-            bookingService.cancelBooking(bookingId);
-        } catch (error) {
-            console.error("Error canceling booking on server:", error);
-            // The booking is already removed from local state, so no need to restore
+    const saveBookings = useCallback((newBookings) => {
+        if (user) {
+            localStorage.setItem(`bookings_${user.id}`, JSON.stringify(newBookings));
+            console.log("Saved bookings to localStorage:", newBookings);
         }
-    }, [saveBookings]);
+    }, [user]);
 
-    const fetchBookings = useCallback(() => {
-        return bookings;
-    }, [bookings]);
+    const fetchBookings = useCallback(async () => {
+        if (!user) return [];
 
-    const createBooking = useCallback((homeId, startDate, endDate, guests = 1, totalPrice = null) => {
-        const homeDetails = mockHomes.find(home => home.id === parseInt(homeId)) || {
-            title: `Home #${homeId}`,
-            location: 'Unknown Location',
-            pricePerNight: 100,
-            image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1200&q=60'
-        };
+        try {
+            // Get bookings from localStorage
+            const savedBookings = localStorage.getItem(`bookings_${user.id}`);
+            const parsedBookings = savedBookings ? JSON.parse(savedBookings) : [];
+            
+            // Update state
+            setBookings(parsedBookings);
+            console.log("Fetched bookings:", parsedBookings);
+            return parsedBookings;
+        } catch (error) {
+            console.error("Error fetching bookings:", error);
+            return [];
+        }
+    }, [user]);
+
+    const createBooking = useCallback((homeId, homeData, startDate, endDate, guests, totalPrice) => {
+        if (!user) return null;
         
-        // Calculate the price if not provided
-        const calculatedPrice = totalPrice || calculatePrice(startDate, endDate, homeDetails.pricePerNight, guests);
-        
+        // Create new booking object
         const newBooking = {
-            id: Date.now(),
-            homeId: parseInt(homeId),
-            homeTitle: homeDetails.title,
-            location: homeDetails.location,
-            image: homeDetails.image,
+            id: Date.now().toString(),
+            homeId: homeId,
+            homeTitle: homeData?.title || `Home ${homeId}`,
+            location: homeData?.location || 'Unknown location',
+            image: homeData?.image || '',
             checkInDate: startDate,
             checkOutDate: endDate,
             guests: guests,
-            totalPrice: calculatedPrice,
+            totalPrice: totalPrice,
             status: 'confirmed',
             createdAt: new Date().toISOString()
         };
         
-        // Try to save to the server first if we have a real API
-        try {
-            if (user) {
-                bookingService.createBooking({
-                    ...newBooking,
-                    userId: user.id
-                });
-            }
-        } catch (error) {
-            console.error("Error creating booking on server:", error);
-            // Continue to save locally even if server fails
-        }
+        console.log("Creating booking:", newBooking);
         
-        addBooking(newBooking);
+        // Update state and localStorage
+        setBookings(prevBookings => {
+            const updatedBookings = [...prevBookings, newBooking];
+            saveBookings(updatedBookings);
+            return updatedBookings;
+        });
+        
         return newBooking;
-    }, [addBooking, user]);
+    }, [user, saveBookings]);
 
-    const calculatePrice = (startDate, endDate, pricePerNight, guests = 1) => {
-        const start = new Date(startDate);
-        const end = new Date(endDate);
-        const nights = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
-        
-        // Add guest factor to pricing
-        const guestFactor = guests > 2 ? 1 + ((guests - 2) * 0.15) : 1; // 15% more per guest after 2
-        const baseTotal = nights * pricePerNight;
-        const totalWithGuests = Math.ceil(baseTotal * guestFactor);
-        const serviceFee = Math.ceil(totalWithGuests * 0.12);
-        
-        return totalWithGuests + serviceFee;
-    };
+    const removeBooking = useCallback((bookingId) => {
+        setBookings(prevBookings => {
+            const updatedBookings = prevBookings.filter(booking => booking.id !== bookingId);
+            saveBookings(updatedBookings);
+            return updatedBookings;
+        });
+    }, [saveBookings]);
 
     return (
         <BookingContext.Provider value={{ 
             bookings, 
-            addBooking, 
-            removeBooking, 
             fetchBookings, 
-            createBooking 
+            createBooking, 
+            removeBooking 
         }}>
             {children}
         </BookingContext.Provider>

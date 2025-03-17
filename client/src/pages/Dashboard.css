@@ -1,14 +1,29 @@
+/* Dashboard container */
 .dashboard-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 30px 20px;
 }
 
+/* Dashboard header */
 .dashboard-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.dashboard-header h1 {
+  font-size: 30px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.dashboard-header p {
+  font-size: 16px;
+  color: #555;
 }
 
 .welcome-section h1 {
@@ -73,10 +88,10 @@
   font-size: 14px;
 }
 
-/* Tabs */
+/* Dashboard tabs */
 .dashboard-tabs {
   display: flex;
-  border-bottom: 1px solid #e1e1e1;
+  border-bottom: 1px solid #e0e0e0;
   margin-bottom: 30px;
 }
 
@@ -101,12 +116,55 @@
   border-bottom-color: #007bff;
 }
 
+.tab-button {
+  background: none;
+  border: none;
+  padding: 15px 20px;
+  font-size: 16px;
+  color: #555;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.tab-button svg {
+  font-size: 18px;
+}
+
+.tab-button.active {
+  color: #007bff;
+  font-weight: 600;
+}
+
+.tab-button.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #007bff;
+}
+
+.tab-button:hover {
+  color: #007bff;
+  background-color: rgba(0, 123, 255, 0.05);
+}
+
+/* Dashboard sections */
+.dashboard-section {
+  margin-bottom: 40px;
+}
+
 /* Section headers */
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 
 .section-header h2 {
@@ -141,67 +199,150 @@
 /* Bookings */
 .bookings-list {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 15px;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
 }
 
 .booking-card {
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  padding: 20px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
+  flex-direction: column;
+  height: 100%;
+  border: 1px solid #f0f0f0;
+}
+
+.booking-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
 }
 
 .booking-info {
   display: flex;
-  flex: 1;
+  flex-direction: column;
 }
 
 .booking-image-container {
-  width: 100px;
-  height: 100px;
-  margin-right: 20px;
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
 }
 
 .booking-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 8px;
+  transition: transform 0.3s;
+}
+
+.booking-card:hover .booking-image {
+  transform: scale(1.05);
 }
 
 .booking-details {
-  flex: 1;
+  padding: 16px;
+  flex-grow: 1;
 }
 
 .booking-details h3 {
-  margin: 0 0 10px 0;
   font-size: 18px;
-  color: #333;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #222;
+  line-height: 1.3;
 }
 
 .booking-location {
   color: #666;
-  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 14px;
   font-size: 14px;
+}
+
+.booking-location svg {
+  margin-right: 6px;
+  color: #ff385c;
 }
 
 .booking-dates {
   display: flex;
-  gap: 15px;
-  margin-bottom: 10px;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+  border-left: 2px solid #ff385c;
+  padding-left: 10px;
+}
+
+.booking-dates p {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: 14px;
-  color: #555;
+  margin: 0;
+}
+
+.booking-dates svg {
+  color: #ff385c;
+}
+
+.booking-guests {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  margin-bottom: 12px;
 }
 
 .booking-price {
-  font-size: 16px;
-  margin-bottom: 8px;
-  color: #007bff;
+  font-size: 18px;
+  font-weight: 600;
+  color: #ff385c;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.booking-actions {
+  padding: 16px;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  gap: 10px;
+}
+
+.booking-actions .btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  flex: 1;
+  text-align: center;
+  transition: all 0.3s;
+}
+
+.btn-outline {
+  border: 1px solid #ddd;
+  background: none;
+  color: #484848;
+}
+
+.btn-outline:hover {
+  background-color: #f7f7f7;
+  border-color: #c7c7c7;
+}
+
+.btn-outline.btn-danger {
+  border-color: #ffccd3;
+  color: #ff385c;
+}
+
+.btn-outline.btn-danger:hover {
+  background-color: #fff0f0;
+  border-color: #ffb3c0;
 }
 
 .status-badge {
@@ -365,20 +506,29 @@
 }
 
 /* Enhanced listing card styling */
+.listings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
 .listing-card {
   display: flex;
   flex-direction: column;
   background-color: white;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.07);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
   height: 100%;
+  border: 1px solid #f0f0f0;
+  position: relative;
 }
 
 .listing-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
 }
 
 .listing-image {
@@ -392,16 +542,31 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.5s ease;
+  transition: transform 0.6s ease;
 }
 
 .listing-card:hover .listing-image img {
-  transform: scale(1.05);
+  transform: scale(1.08);
+}
+
+.listing-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background-color: rgba(255, 56, 92, 0.9);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 50px;
+  font-size: 12px;
+  font-weight: 600;
+  z-index: 10;
 }
 
 .listing-info {
-  padding: 18px;
+  padding: 20px;
   flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .listing-info h3 {
@@ -409,28 +574,201 @@
   font-size: 18px;
   color: #333;
   font-weight: 600;
+  line-height: 1.3;
+}
+
+.listing-meta {
+  margin-bottom: 15px;
 }
 
 .listing-location,
-.listing-price {
+.listing-price,
+.listing-features {
   display: flex;
   align-items: center;
   font-size: 14px;
   color: #666;
-  margin-bottom: 7px;
+  margin-bottom: 8px;
 }
 
 .listing-location svg,
-.listing-price svg {
-  margin-right: 7px;
+.listing-price svg,
+.listing-features svg {
+  margin-right: 8px;
   font-size: 14px;
-  color: #999;
+  color: #ff385c;
+  flex-shrink: 0;
 }
 
 .listing-price {
   font-weight: 600;
   color: #333;
-  font-size: 15px;
+  font-size: 16px;
+}
+
+.listing-stats {
+  display: flex;
+  margin-top: auto;
+  padding-top: 15px;
+  border-top: 1px solid #f0f0f0;
+  justify-content: space-between;
+}
+
+.listing-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.listing-stat-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.listing-stat-label {
+  font-size: 12px;
+  color: #666;
+}
+
+.listing-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 20px;
+  border-top: 1px solid #f0f0f0;
+  background-color: #fafafa;
+}
+
+.listing-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: white;
+}
+
+.btn-view {
+  background-color: #4a89dc;
+}
+
+.btn-edit {
+  background-color: #3cbc8d;
+}
+
+.btn-delete {
+  background-color: #e53935;
+}
+
+.listing-action-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+.btn-view:hover {
+  background-color: #3a70c2;
+}
+
+.btn-edit:hover {
+  background-color: #34a67c;
+}
+
+.btn-delete:hover {
+  background-color: #d32f2f;
+}
+
+.listing-status {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 4px 10px;
+  border-radius: 50px;
+  font-size: 12px;
+  font-weight: 600;
+  z-index: 10;
+}
+
+.status-active {
+  background-color: rgba(52, 168, 83, 0.9);
+  color: white;
+}
+
+.status-pending {
+  background-color: rgba(251, 188, 5, 0.9);
+  color: white;
+}
+
+.status-inactive {
+  background-color: rgba(234, 67, 53, 0.9);
+  color: white;
+}
+
+.listing-features {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.feature {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  color: #666;
+}
+
+.feature svg {
+  font-size: 14px;
+  color: #ff385c;
+}
+
+/* Create an empty state for no listings */
+.empty-listings {
+  text-align: center;
+  padding: 40px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.empty-listings-icon {
+  font-size: 50px;
+  color: #ccc;
+  margin-bottom: 20px;
+}
+
+.empty-listings h3 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.empty-listings p {
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.empty-listings .create-listing-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #ff385c;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.empty-listings .create-listing-button:hover {
+  background-color: #e31c5f;
 }
 
 /* Tooltip for action buttons */
@@ -481,9 +819,53 @@
 /* Responsive grid adjustments */
 .listings-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 25px;
-  margin-top: 25px;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+/* Add this to your Dashboard.css file */
+
+.feature-unavailable {
+  cursor: not-allowed;
+}
+
+.feature-tooltip {
+  position: fixed;
+  z-index: 1000;
+  background-color: #f8f9fa;
+  border-left: 4px solid #ffc107;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  padding: 10px 15px;
+  width: 220px;
+  animation: tooltipFade 0.3s ease-in-out;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.feature-tooltip .tooltip-icon {
+  color: #ffc107;
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+.feature-tooltip p {
+  margin: 0;
+  font-size: 14px;
+  color: #333;
+}
+
+@keyframes tooltipFade {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Responsive */
@@ -532,12 +914,21 @@
     justify-content: flex-end;
   }
 
-  .listings-grid {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  .listings-grid,
+  .homes-list {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   }
   
   .listing-actions {
     justify-content: center;
+  }
+
+  .bookings-list {
+    grid-template-columns: 1fr;
+  }
+  
+  .booking-image-container {
+    height: 160px;
   }
 }
 
@@ -562,10 +953,116 @@
     flex-direction: column;
     align-items: stretch;
   }
+
+  .listings-grid,
+  .homes-list {
+    grid-template-columns: 1fr;
+  }
+  
+  .listing-image {
+    height: 180px;
+  }
+  
+  .listing-info {
+    padding: 15px;
+  }
 }
 
 @media (max-width: 480px) {
   .listings-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .listing-image {
+    height: 220px;
+  }
+  
+  .booking-info {
+    flex-direction: column;
+  }
+  
+  .booking-image-container {
+    width: 100%;
+    height: 150px;
+    margin-right: 0;
+    margin-bottom: 15px;
+  }
+  
+  .booking-dates {
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .booking-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* Updated grid layout for listings */
+.listings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+/* Make homes-list use grid layout as well (for backwards compatibility) */
+.homes-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+/* Update the listing card to match booking card style */
+.listing-card {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border: 1px solid #f0f0f0;
+  position: relative;
+}
+
+.listing-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.listing-image {
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  position: relative;
+}
+
+.listing-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.listing-card:hover .listing-image img {
+  transform: scale(1.05);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .listings-grid,
+  .homes-list {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+}
+
+@media (max-width: 576px) {
+  .listings-grid,
+  .homes-list {
     grid-template-columns: 1fr;
   }
 }

@@ -45,12 +45,17 @@ export const useAuth = () => {
         navigate('/');
     };
 
-    // Only redirect if explicitly navigating from login/register
+    // Inside the useEffect that handles redirecting after login
     useEffect(() => {
         if (user && location.pathname.match(/\/(login|register)$/)) {
             const params = new URLSearchParams(location.search);
             const redirectPath = params.get('redirect') || '/';
-            navigate(redirectPath);
+            
+            if (redirectPath && redirectPath.startsWith('/') && !redirectPath.match(/\/(login|register)$/)) {
+                navigate(redirectPath);
+            } else {
+                navigate('/');
+            }
         }
     }, [user, navigate, location]);
 

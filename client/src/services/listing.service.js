@@ -136,6 +136,47 @@ const listingService = {
   },
   
   /**
+   * Create a new home listing
+   * @param {Object} homeData - The data for the new home
+   * @returns {Promise} Promise that resolves to the created home object
+   */
+  createHome: async (homeData) => {
+    try {
+      // Simulate API delay
+      await delay(1000);
+      
+      // Get the current user
+      const currentUser = JSON.parse(localStorage.getItem('user'));
+      
+      // Create new home with ID and timestamps
+      const newHome = {
+        ...homeData,
+        id: Date.now(),
+        ownerId: currentUser?.id,
+        ownerEmail: currentUser?.email,
+        owner: currentUser?.id,
+        createdBy: currentUser?.id,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      
+      // Get existing user listings
+      const existingListings = JSON.parse(localStorage.getItem('userListings') || '[]');
+      
+      // Add new listing
+      const updatedListings = [...existingListings, newHome];
+      
+      // Save to localStorage
+      localStorage.setItem('userListings', JSON.stringify(updatedListings));
+      
+      return { data: newHome };
+    } catch (error) {
+      console.error("Error creating home:", error);
+      throw error;
+    }
+  },
+  
+  /**
    * Update an existing listing
    * @param {string|number} id - The ID of the listing to update
    * @param {Object} updateData - The data to update
@@ -246,7 +287,46 @@ const listingService = {
       console.error(`Error fetching listings for user ${userId}:`, error);
       throw error;
     }
-  }
+  },
+
+  /**
+   * Get homes created by the current user
+   * @returns {Promise} Promise that resolves to an array of homes
+   */
+  getUserHomes: async () => {
+    try {
+      // Simulate API delay
+      await delay(600);
+      
+      // Get current user from localStorage
+      const currentUser = JSON.parse(localStorage.getItem('user'));
+      if (!currentUser) {
+        return { data: [] }; // No user logged in
+      }
+      
+      // Get user listings from localStorage
+      const userListings = JSON.parse(localStorage.getItem('userListings') || '[]');
+      
+      // Filter homes based on the current user's ID or email
+      const userHomes = userListings.filter(home => {
+        return (
+          // Check all possible owner ID fields with loose comparison
+          (home.ownerId && (home.ownerId == currentUser.id)) || 
+          (home.owner && (home.owner == currentUser.id)) || 
+          (home.ownerEmail && (home.ownerEmail == currentUser.email)) ||
+          // If none of the above match, check if the listing was created by this user's session
+          (home.createdBy && home.createdBy == currentUser.id)
+        );
+      });
+      
+      console.log('Current user:', currentUser);
+      console.log('Filtered user homes:', userHomes);
+      return { data: userHomes };
+    } catch (error) {
+      console.error("Error fetching user's homes:", error);
+      throw error;
+    }
+  },
 };
 
 export default listingService;

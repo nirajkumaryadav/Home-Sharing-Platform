@@ -5,163 +5,276 @@ import { useBooking } from '../../contexts/BookingContext';
 import { FaMoneyBillWave, FaCreditCard, FaPaypal, FaApplePay } from 'react-icons/fa';
 import './BookingForm.css';
 
-const BookingForm = ({ homeId, pricePerNight }) => {
+const BookingForm = ({ homeId, homeData, pricePerNight }) => {
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
   const [guests, setGuests] = useState(1);
+  const [nights, setNights] = useState(0);
+  const [basePrice, setBasePrice] = useState(0);
+  const [serviceFee, setServiceFee] = useState(0);
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [showPaymentOptions, setShowPaymentOptions] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('');
-  const [showPaymentOptions, setShowPaymentOptions] = useState(false);
+  const [paymentError, setPaymentError] = useState('');
+  
+  const { user } = useAuth();
   const { createBooking } = useBooking();
   const navigate = useNavigate();
-  const { user } = useAuth();
 
-  // Calculate number of nights and total price
-  const calculateNights = () => {
-    if (!checkIn || !checkOut) return 0;
-    const start = new Date(checkIn);
-    const end = new Date(checkOut);
-    const diffTime = Math.abs(end - start);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
-  };
+  // Calculate booking details when inputs change
+  useEffect(() => {
+    if (checkIn && checkOut) {
+      const start = new Date(checkIn);
+      const end = new Date(checkOut);
+      const nightsCount = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+      
+      if (nightsCount > 0) {
+        setNights(nightsCount);
+        const basePriceCalc = nightsCount * pricePerNight;
+        setBasePrice(basePriceCalc);
+        
+        // Add service fee (e.g. 12% of base price)
+        const serviceFeeCalc = Math.round(basePriceCalc * 0.12);
+        setServiceFee(serviceFeeCalc);
+        
+        // Calculate total
+        setTotalPrice(basePriceCalc + serviceFeeCalc);
+      }
+    }
+  }, [checkIn, checkOut, pricePerNight]);
 
-  const nights = calculateNights();
-  
-  // Add guest factor to pricing (additional guests cost more)
-  const guestFactor = guests > 2 ? 1 + ((guests - 2) * 0.15) : 1; // 15% more per guest after 2
-  const baseTotal = nights * pricePerNight;
-  const totalWithGuests = Math.ceil(baseTotal * guestFactor);
-  const serviceFee = Math.ceil(totalWithGuests * 0.12);
-  const finalTotal = totalWithGuests + serviceFee;
-  
-  // Handle payment method selection
   const handlePaymentSelect = (method) => {
     setPaymentMethod(method);
-    
-    if (method !== 'cash') {
-      alert(`${method.charAt(0).toUpperCase() + method.slice(1)} payment is not available at this time. Please choose Cash payment to proceed.`);
-      return;
+    // Clear previous errors when user selects a different payment method
+    setPaymentError('');
+  };
+
+  const getPaymentMethodName = (method) => {
+    switch(method) {
+      case 'card': return 'Credit Card';
+      case 'paypal': return 'PayPal';
+      case 'applepay': return 'Apple Pay';
+      case 'cash': return 'Pay at Property';
+      default: return method;
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    // Show payment options if not yet selected
-    if (!showPaymentOptions) {
-      setShowPaymentOptions(true);
+  const handleBookNow = () => {
+    if (!user) {
+      // Save form data before redirecting to login
+      localStorage.setItem(`booking_data_${homeId}`, JSON.stringify({ checkIn, checkOut, guests }));
+      navigate('/login?redirect=' + encodeURIComponent(`/listing/${homeId}`));
       return;
     }
     
-    // Require payment method selection
+    // Validate dates
+    if (!checkIn || !checkOut) {
+      alert('Please select check-in and check-out dates');
+      return;
+    }
+    
+    // Check if dates are valid
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const startDate = new Date(checkIn);
+    const endDate = new Date(checkOut);
+    
+    if (startDate < today) {
+      alert('Check-in date cannot be in the past');
+      return;
+    }
+    
+    if (endDate <= startDate) {
+      alert('Check-out date must be after check-in date');
+      return;
+    }
+    
+    // Show payment options
+    setShowPaymentOptions(true);
+  };
+
+  const handleConfirmBooking = async (e) => {
+    e.preventDefault();
+    
     if (!paymentMethod) {
       alert('Please select a payment method');
       return;
     }
-    
-    // Only allow cash payment for now
+
+    // Only allow 'cash' payment method for now
     if (paymentMethod !== 'cash') {
-      alert(`${paymentMethod.charAt(0).toUpperCase() + paymentMethod.slice(1)} payment is not available yet. Please choose Cash payment.`);
+      setPaymentError(`${getPaymentMethodName(paymentMethod)} is not available at this time. Please select "Pay at Property" option.`);
       return;
     }
     
-    // Redirect to login if user is not authenticated
-    if (!user) {
-      navigate(`/login?redirect=listing/${homeId}`);
-      return;
-    }
+    setIsSubmitting(true);
     
     try {
-      setIsSubmitting(true);
-      await createBooking(homeId, checkIn, checkOut, guests, finalTotal);
+      // Create the booking using our context
+      const bookingResult = await createBooking(
+        homeId,
+        homeData,
+        checkIn,
+        checkOut,
+        guests,
+        totalPrice
+      );
+      
+      console.log("Booking created:", bookingResult);
+      
+      // Store booking data in multiple locations to ensure retrieval
+      const bookingWithUserInfo = {
+        ...bookingResult,
+        userId: user.id,
+        userEmail: user.email
+      };
+      
+      // Store in recent booking location for immediate access
+      localStorage.setItem('recent_booking_id', bookingResult.id);
+      localStorage.setItem('recent_booking_data', JSON.stringify(bookingWithUserInfo));
+      
+      // Get existing bookings and append the new one
+      // For user-specific storage
+      const userBookings = JSON.parse(localStorage.getItem(`bookings_${user.id}`) || '[]');
+      // Check if this booking already exists
+      const existingBookingIndex = userBookings.findIndex(b => b.id === bookingResult.id);
+      if (existingBookingIndex === -1) {
+        userBookings.push(bookingWithUserInfo);
+      } else {
+        // Replace existing booking with updated one
+        userBookings[existingBookingIndex] = bookingWithUserInfo;
+      }
+      localStorage.setItem(`bookings_${user.id}`, JSON.stringify(userBookings));
+      
+      // For email-based backup storage
+      if (user.email) {
+        const emailBookings = JSON.parse(localStorage.getItem(`bookings_email_${user.email}`) || '[]');
+        const existingEmailIndex = emailBookings.findIndex(b => b.id === bookingResult.id);
+        if (existingEmailIndex === -1) {
+          emailBookings.push(bookingWithUserInfo);
+        } else {
+          emailBookings[existingEmailIndex] = bookingWithUserInfo;
+        }
+        localStorage.setItem(`bookings_email_${user.email}`, JSON.stringify(emailBookings));
+      }
+      
+      // Also store in global bookings for redundancy
+      const allBookings = JSON.parse(localStorage.getItem('all_bookings') || '[]');
+      const existingAllIndex = allBookings.findIndex(b => b.id === bookingResult.id);
+      if (existingAllIndex === -1) {
+        allBookings.push(bookingWithUserInfo);
+      } else {
+        allBookings[existingAllIndex] = bookingWithUserInfo;
+      }
+      localStorage.setItem('all_bookings', JSON.stringify(allBookings));
       
       // Show success message
-      setSuccessMessage('Booking successful! Redirecting to dashboard...');
+      setSuccessMessage('Booking confirmed! Redirecting to dashboard...');
       
-      // Reset form
-      setCheckIn('');
-      setCheckOut('');
-      setGuests(1);
-      setPaymentMethod('');
-      setShowPaymentOptions(false);
-      
-      // Redirect after a short delay
+      // Redirect to dashboard after a brief delay
       setTimeout(() => {
-        navigate('/dashboard');
+        // Use state parameter to force dashboard to refetch bookings
+        navigate('/dashboard?tab=bookings&newBooking=' + Date.now());
       }, 2000);
     } catch (error) {
       console.error('Error creating booking:', error);
-      alert('Failed to create booking. Please try again.');
+      alert('There was a problem creating your booking. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  // Rest of your component remains the same...
+  // ... (payment options rendering, etc.)
+
   return (
     <div className="booking-form-container">
       <div className="booking-form-card">
-        <div className="booking-price">
-          <span className="price">${pricePerNight}</span> / night
-        </div>
+        <h2>Book this property</h2>
+        <p className="booking-price">${pricePerNight} per night</p>
         
-        {successMessage ? (
-          <div className="success-message">
-            <p>{successMessage}</p>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="booking-form">
-            <div className="dates-container">
-              <div className="form-group">
-                <label>Check-in</label>
-                <input
-                  type="date"
-                  value={checkIn}
-                  onChange={(e) => setCheckIn(e.target.value)}
-                  min={new Date().toISOString().split('T')[0]}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Check-out</label>
-                <input
-                  type="date"
-                  value={checkOut}
-                  onChange={(e) => setCheckOut(e.target.value)}
-                  min={checkIn || new Date().toISOString().split('T')[0]}
-                  required
-                />
-              </div>
+        {!successMessage ? (
+          <form onSubmit={handleConfirmBooking} className="booking-form">
+            <div className="form-group">
+              <label htmlFor="checkIn">Check-in:</label>
+              <input 
+                type="date" 
+                id="checkIn"
+                value={checkIn}
+                onChange={(e) => setCheckIn(e.target.value)}
+                required
+              />
             </div>
             
             <div className="form-group">
-              <label>Guests</label>
-              <select 
-                value={guests} 
-                onChange={(e) => setGuests(parseInt(e.target.value))}
+              <label htmlFor="checkOut">Check-out:</label>
+              <input 
+                type="date" 
+                id="checkOut"
+                value={checkOut}
+                onChange={(e) => setCheckOut(e.target.value)}
                 required
+              />
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="guests">Guests:</label>
+              <select 
+                id="guests" 
+                value={guests}
+                onChange={(e) => setGuests(parseInt(e.target.value))}
               >
                 {[...Array(10)].map((_, i) => (
-                  <option key={i+1} value={i+1}>{i+1} {i === 0 ? 'Guest' : 'Guests'}</option>
+                  <option key={i} value={i + 1}>{i + 1} {i === 0 ? 'guest' : 'guests'}</option>
                 ))}
               </select>
             </div>
             
+            {checkIn && checkOut && nights > 0 && (
+              <div className="booking-summary">
+                <h3>Booking Summary</h3>
+                <div className="summary-line">
+                  <span>${pricePerNight} x {nights} nights</span>
+                  <span>${basePrice}</span>
+                </div>
+                <div className="summary-line">
+                  <span>Service fee</span>
+                  <span>${serviceFee}</span>
+                </div>
+                <div className="summary-total">
+                  <span>Total</span>
+                  <span>${totalPrice}</span>
+                </div>
+              </div>
+            )}
+            
+            {!showPaymentOptions ? (
+              <button 
+                type="button" 
+                className="btn btn-primary btn-block"
+                onClick={handleBookNow}
+              >
+                Book Now
+              </button>
+            ) : null}
+            
             {showPaymentOptions && (
               <div className="payment-methods">
                 <h3>Select Payment Method</h3>
+                {paymentError && <div className="payment-error">{paymentError}</div>}
                 <div className="payment-options">
                   <div 
                     className={`payment-option ${paymentMethod === 'cash' ? 'selected' : ''}`}
                     onClick={() => handlePaymentSelect('cash')}
                   >
                     <FaMoneyBillWave />
-                    <span>Cash</span>
+                    <span>Pay at Property</span>
                   </div>
                   <div 
-                    className={`payment-option ${paymentMethod === 'credit' ? 'selected' : ''}`}
-                    onClick={() => handlePaymentSelect('credit')}
+                    className={`payment-option ${paymentMethod === 'card' ? 'selected' : ''}`}
+                    onClick={() => handlePaymentSelect('card')}
                   >
                     <FaCreditCard />
                     <span>Credit Card</span>
@@ -174,45 +287,28 @@ const BookingForm = ({ homeId, pricePerNight }) => {
                     <span>PayPal</span>
                   </div>
                   <div 
-                    className={`payment-option ${paymentMethod === 'apple' ? 'selected' : ''}`}
-                    onClick={() => handlePaymentSelect('apple')}
+                    className={`payment-option ${paymentMethod === 'applepay' ? 'selected' : ''}`}
+                    onClick={() => handlePaymentSelect('applepay')}
                   >
                     <FaApplePay />
                     <span>Apple Pay</span>
                   </div>
                 </div>
+                
+                <button 
+                  type="submit" 
+                  className="btn btn-primary btn-block"
+                  disabled={!paymentMethod || isSubmitting}
+                >
+                  {isSubmitting ? 'Processing...' : 'Confirm Booking'}
+                </button>
               </div>
             )}
-            
-            <button 
-              type="submit" 
-              className="booking-button" 
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? 'Processing...' : showPaymentOptions ? 'Complete Booking' : 'Reserve'}
-            </button>
-            
-            <div className="booking-details">
-              <div className="booking-row">
-                <span>${pricePerNight} x {nights || 0} nights</span>
-                <span>${baseTotal || 0}</span>
-              </div>
-              {guests > 2 && (
-                <div className="booking-row">
-                  <span>Additional guest fee ({guests-2} extra {guests-2 === 1 ? 'guest' : 'guests'})</span>
-                  <span>${totalWithGuests - baseTotal}</span>
-                </div>
-              )}
-              <div className="booking-row">
-                <span>Service fee</span>
-                <span>${serviceFee || 0}</span>
-              </div>
-              <div className="booking-row total">
-                <span>Total</span>
-                <span>${finalTotal || 0}</span>
-              </div>
-            </div>
           </form>
+        ) : (
+          <div className="success-message">
+            <p>{successMessage}</p>
+          </div>
         )}
       </div>
     </div>

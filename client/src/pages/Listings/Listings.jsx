@@ -212,11 +212,12 @@ const Listings = () => {
               <Link to={`/listing/${home.id}`} className="listing-card" key={home.id}>
                 <div className="listing-image">
                   <img 
-                    src={home.image || 'https://via.placeholder.com/300x200?text=Home+Image'} 
+                    src={home.image} 
                     alt={home.title}
                     onError={(e) => {
                       e.target.onerror = null;
-                      e.target.src = 'https://via.placeholder.com/300x200?text=Home+Image';
+                      // Use inline SVG instead of placeholder.com
+                      e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'%3E%3Crect width='300' height='200' fill='%23f0f0f0'/%3E%3Ctext x='50%25' y='50%25' font-size='18' text-anchor='middle' alignment-baseline='middle' font-family='Arial, sans-serif' fill='%23999999'%3ENo Image%3C/text%3E%3C/svg%3E";
                     }}
                   />
                 </div>

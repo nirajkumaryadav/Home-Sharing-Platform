@@ -171,6 +171,12 @@
   border-radius: 8px;
   text-align: center;
   margin: 20px 0;
+  text-align: center;
+  padding: 30px 15px;
+  color: #28a745;
+  font-weight: 500;
+  font-size: 18px;
+  animation: fadeIn 0.5s;
 }
 
 /* Payment Modal Styling */
@@ -201,7 +207,118 @@
 }
 
 .payment-methods {
-    margin-bottom: 20px;
+  margin: 20px 0;
+  padding: 15px 0;
+  border-top: 1px solid #eee;
+}
+
+.payment-methods h3 {
+  font-size: 16px;
+  margin-bottom: 15px;
+  color: #333;
+  font-weight: 500;
+}
+
+.payment-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.payment-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 15px 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.payment-option:hover {
+  border-color: #007bff;
+  background-color: #f8f9fa;
+}
+
+.payment-option.selected {
+  border-color: #4caf50;
+  background-color: #e8f5e9;
+  box-shadow: 0 0 0 1px #007bff;
+}
+
+.payment-icon {
+  font-size: 24px;
+  margin-bottom: 8px;
+  color: #555;
+}
+
+.payment-option.selected .payment-icon {
+  color: #007bff;
+}
+
+.payment-option-label {
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+}
+
+.card-icons {
+  display: flex;
+  gap: 5px;
+  margin-top: 5px;
+  color: #666;
+}
+
+.booking-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.btn-cancel {
+  flex: 1;
+  padding: 10px;
+  background-color: #f1f1f1;
+  color: #333;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  margin-right: 10px;
+  transition: background-color 0.2s;
+}
+
+.btn-cancel:hover {
+  background-color: #e0e0e0;
+}
+
+.btn-confirm {
+  flex: 2;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.btn-confirm:hover {
+  background-color: #0069d9;
+}
+
+.btn-confirm:disabled {
+  background-color: #b3d7ff;
+  cursor: not-allowed;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .payment-method {
@@ -344,8 +461,8 @@
 }
 
 .payment-option.selected {
-  border-color: #007bff;
-  background-color: #ebf5ff;
+  border-color: #4caf50;
+  background-color: #e8f5e9;
   box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
 }
 
@@ -362,4 +479,15 @@
 .payment-option span {
   font-size: 14px;
   font-weight: 500;
+}
+
+/* Add this to your existing CSS */
+.payment-error {
+  background-color: #ffebee;
+  color: #d32f2f;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  border-left: 4px solid #d32f2f;
 }

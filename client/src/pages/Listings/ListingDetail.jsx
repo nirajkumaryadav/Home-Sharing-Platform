@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { FaStar, FaMapMarkerAlt, FaUsers, FaBed, FaBath, FaWifi, FaHome, FaArrowLeft } from 'react-icons/fa';
 import { useAuth } from '../../hooks/useAuth';
 import listingService from '../../services/listing.service';
@@ -13,6 +13,7 @@ const ListingDetail = () => {
     const [error, setError] = useState('');
     const { user } = useAuth();
     const [isOwnListing, setIsOwnListing] = useState(false);
+    const navigate = useNavigate();
     // Add a ref to track if this is the first render
     const initialFetchDone = useRef(false);
 
@@ -80,6 +81,18 @@ const ListingDetail = () => {
             setIsOwnListing(false);
         }
     }, [user, home]);
+
+    const handleBookNow = () => {
+        if (!user) {
+            // Save current path for redirect after login
+            const currentPath = location.pathname;
+            navigate(`/login?redirect=${encodeURIComponent(currentPath)}`);
+            return;
+        }
+        
+        // Proceed with booking logic for logged-in users
+        // ...
+    };
 
     if (loading) {
         return (
@@ -185,7 +198,13 @@ const ListingDetail = () => {
 
                     {/* Show booking form only if it's not the user's own listing */}
                     {!isOwnListing ? (
-                        <BookingForm homeId={home?.id} pricePerNight={home?.pricePerNight || 100} />
+                        <div className="booking-container">
+                            <BookingForm 
+                                homeId={id} 
+                                homeData={home} // Pass the full home data
+                                pricePerNight={home?.pricePerNight || 0} 
+                            />
+                        </div>
                     ) : (
                         <div className="owner-actions">
                             <h3>Manage Your Listing</h3>
