@@ -2,6 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const path = require('path');
+const mongoose = require('mongoose');
 const config = require('./config/config');
 const authRoutes = require('./routes/auth.routes');
 const bookingRoutes = require('./routes/booking.routes');
@@ -9,8 +11,10 @@ const listingRoutes = require('./routes/listing.routes');
 const errorMiddleware = require('./middleware/error.middleware');
 const net = require('net');
 
-// Load environment variables
-dotenv.config();
+// Load environment variables from the root directory
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+
+console.log('DB_URI:', process.env.DB_URI); // Add this line to debug
 
 const app = express();
 let PORT = process.env.PORT || 5000;
@@ -19,12 +23,22 @@ let PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// Skip database connection entirely and use mock data
-console.log('Using mock data for development');
+// Connect to MongoDB
+mongoose.connect(process.env.DB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.error('MongoDB connection error:', err));
 
 // Test route to verify the server is working
 app.get('/api/test', (req, res) => {
     res.json({ message: 'Server is running correctly' });
+});
+
+// Add this before your other routes
+app.get('/', (req, res) => {
+  res.send('Home Sharing Platform API is running');
 });
 
 // Routes
