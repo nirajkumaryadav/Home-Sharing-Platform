@@ -36,7 +36,8 @@ home-sharing-platform
 ### Installation
 1. Clone the repository:
    ```
-   git clone <repository-url>
+   git clone https://github.com/nirajkumaryadav/Home-Sharing-Platform.git
+   cd Home-Sharing-Platform
    ```
 2. Navigate to the client directory and install dependencies:
    ```
