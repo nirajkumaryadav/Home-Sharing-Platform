@@ -1,5 +1,8 @@
 # Home Sharing Platform
 
+## Live Demo
+**Check out the live application here: [https://home-sharing-platform.vercel.app/](https://home-sharing-platform.vercel.app/)**
+
 ## Overview
 The Home Sharing Platform is a web application that allows users to list their homes for others to book while they are away. It provides a user-friendly interface for both home owners and guests, facilitating easy home listings and bookings.
 
